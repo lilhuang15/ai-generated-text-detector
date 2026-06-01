@@ -3,6 +3,11 @@ doc/
 
 # Trained models and large artifacts (hosted on Hugging Face Hub)
 models/
+*.pth
+
+# Large data files — keep the small processed splits in git, host big ones on HF Hub.
+# (gitignore can't filter by size; check `ls -lh data/processed/` before committing and
+#  add any Parquet over ~50 MB here explicitly.)
 
 # Python
 .venv/
