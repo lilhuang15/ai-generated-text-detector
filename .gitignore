@@ -9,6 +9,12 @@ models/
 # (gitignore can't filter by size; check `ls -lh data/processed/` before committing and
 #  add any Parquet over ~50 MB here explicitly.)
 
+# Secrets / API keys — NEVER commit these (public repo)
+.env
+.env.*
+*.key
+secrets.*
+
 # Python
 .venv/
 __pycache__/
