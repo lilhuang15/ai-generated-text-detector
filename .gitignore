@@ -12,6 +12,7 @@ models/
 # Secrets / API keys — NEVER commit these (public repo)
 .env
 .env.*
+!.env.example
 *.key
 secrets.*
 

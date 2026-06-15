@@ -19,6 +19,7 @@ tqdm>=4.66
 
 # LLM
 anthropic>=0.25,<1.0
+python-dotenv>=1.0        # load ANTHROPIC_API_KEY from a local, gitignored .env (NB4)
 
 # Deployment
 streamlit>=1.32
