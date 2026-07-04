@@ -1,0 +1,6 @@
+model,trainable_params,macro_f1,f1_human,f1_ai,precision_ai,recall_ai,cost_per_1k_usd,latency_ms_mean
+TF-IDF + LogReg,30000,0.975,0.9751,0.9749,0.9798,0.97,0.0,0.17
+PyTorch LSTM,3891777,0.98,0.9802,0.9798,0.9898,0.97,0.0,4.51
+BERT full fine-tune,109780228,0.97,0.9697,0.9703,0.9608,0.98,0.0,19.68
+BERT + LoRA,296450,0.995,0.995,0.995,1.0,0.99,0.0,18.35
+Claude Haiku 4.5 0-shot,0,0.9144,0.9071,0.9217,0.8547,1.0,0.2468,761.38
