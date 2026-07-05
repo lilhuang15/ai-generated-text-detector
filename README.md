@@ -24,16 +24,18 @@ paid LLM on identical footing)²:
 
 | Model | Macro-F1 | AI-recall | AI-precision | Latency | Cost / 1K |
 |---|---|---|---|---|---|
-| TF-IDF + LogReg | 0.975 | 0.97 | 0.98 | 0.1 ms | $0 |
-| PyTorch LSTM | 0.980 | 0.97 | 0.99 | 2.9 ms | $0 |
-| BERT full fine-tune | 0.970 | 0.98 | 0.96 | 19 ms | $0 |
-| BERT + LoRA | 0.995 | 0.99 | 1.00 | 18 ms | $0 |
-| Claude Haiku 4.5 zero-shot | 0.914 | **1.00** | **0.85** | 761 ms | $0.25 |
+| TF-IDF + LogReg | 0.975 | 0.97 | 0.98 | <1 ms | $0 |
+| PyTorch LSTM | 0.980 | 0.97 | 0.99 | ~2 ms | $0 |
+| BERT full fine-tune | 0.970 | 0.98 | 0.96 | ~19 ms | $0 |
+| BERT + LoRA | 0.995 | 0.99 | 1.00 | ~18 ms | $0 |
+| Claude Haiku 4.5 zero-shot | 0.914 | **1.00** | **0.85** | ~760 ms | $0.25 |
 
 > On n=200, one flipped sample ≈ 0.5 pp — subset rankings among the local models are noise
 > (the full-test table above is the reliable ranking). The subset's job is the **Claude
 > comparison**: the zero-shot LLM catches every AI text (recall 1.00) but false-flags humans
 > (precision 0.85), and loses to a $0-marginal fine-tune by ~8 pp.
+
+![Latency vs macro-F1: the four local models cluster at 0.97–0.995 F1 under 20 ms; zero-shot Claude sits at 0.914 F1 and 761 ms](results/figs/latency_f1_frontier.png)
 
 **Three findings:**
 1. **Fine-tuning still wins in-domain (2026):** a 110M BERT at ~20 ms/$0 beats zero-shot
@@ -107,6 +109,8 @@ model makes on the full 10,200-sample test**:
   the AI median of 174; 96% above the human median).
 - **Implications:** trivial evasion — ask the AI to answer briefly; asymmetric harm — the most
   articulate humans are the most likely to be falsely accused. Both are disclosed in the demo.
+
+![Training length distributions for human and AI answers, with the 3 missed AI texts marked in the far-left tail of the AI distribution and the falsely-flagged-human median line sitting at the AI median](results/figs/length_prior.png)
 
 ## Limitations
 

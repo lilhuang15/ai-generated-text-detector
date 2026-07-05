@@ -78,8 +78,52 @@ st.markdown(
     "HC3 reddit_eli5) vs **Claude Haiku 4.5 zero-shot**."
 )
 
+# --- Example texts (from the HC3 test set, so predictions match the reported eval) ---
+EXAMPLES = {
+    "🧑 Human answer": (
+        "Squatting puts the heavy lifting duties on the massive powerful muscles and thick "
+        "bones of the legs . Bending puts the lifting duties on the smaller stabilizing "
+        "muscles and fragile vertebra and cartilage in the spine . The spine can carry a "
+        "massive load as long as it 's compressed , it 's easily injured when trying to "
+        "support much weight while bent ."
+    ),
+    "🤖 AI answer (ChatGPT)": (
+        "BBC Three is not coming off the air. BBC Three is a television channel operated by "
+        "the British Broadcasting Corporation (BBC). It was originally a television channel, "
+        "but it has since transitioned to an online-only service, which means that it is no "
+        "longer available as a traditional television channel that you can watch on your TV. "
+        "Instead, you can watch BBC Three content online, through the BBC iPlayer app or on "
+        "the BBC Three website. The decision to make BBC Three an online-only service was "
+        "made by the BBC in 2016 as part of a wider strategy to adapt to changing viewing "
+        "habits and to make more efficient use of its resources. Despite this change, BBC "
+        "Three remains a popular service, and you can still watch a wide range of "
+        "high-quality programming on the channel online."
+    ),
+    "🕳️ Short AI — BERT's blind spot": (
+        "Canada and the United States are two separate countries with their own governments "
+        "and histories. They have a close relationship and share a long border, but they "
+        "have never been absorbed into each other. They have always remained independent "
+        "and sovereign nations."
+    ),
+}
+
+def _fill_example(name: str) -> None:
+    st.session_state.input_text = EXAMPLES[name]
+
+EXAMPLE_HELP = {
+    "🧑 Human answer": "A casual Reddit explanation — both models should say Human.",
+    "🤖 AI answer (ChatGPT)": "A typical GPT-3.5 answer — both models should say AI.",
+    "🕳️ Short AI — BERT's blind spot": "A 42-word AI answer at the ≤2nd percentile of AI training "
+    "length. Per the error analysis, BERT misses it (length prior) while Claude catches it.",
+}
+
+st.caption("No text handy? Try a real sample from the held-out test set:")
+for col, name in zip(st.columns(len(EXAMPLES)), EXAMPLES):
+    col.button(name, on_click=_fill_example, args=(name,),
+               help=EXAMPLE_HELP[name], use_container_width=True)
+
 text = st.text_area(
-    "Paste any text to classify:", height=200,
+    "Paste any text to classify:", height=200, key="input_text",
     placeholder="Paste an essay, article, or chatbot response (a few sentences or more works best)...",
 )
 
