@@ -1,0 +1,5 @@
+model,macro_f1_full_test,n_test
+TF-IDF + LogReg,0.982,10200
+PyTorch LSTM,0.9758,10200
+BERT full fine-tune,0.9935,10200
+BERT + LoRA,0.9877,10200
