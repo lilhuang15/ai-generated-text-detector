@@ -30,6 +30,9 @@ def classify_text(client, text: str, model: str = DEFAULT_MODEL, max_chars: int 
     resp = client.messages.create(
         model=model,
         max_tokens=4,
+        temperature=0,  # deterministic: same text -> same digit (greedy pick, no sampling).
+        # NB4's 200-sample eval ran before this was set (API default); those responses are
+        # cache-frozen in data/claude_responses_cache.json, so its reported numbers are unaffected.
         messages=[{"role": "user", "content": PROMPT_TEMPLATE.format(text=text[:max_chars])}],
     )
     content = resp.content[0].text.strip()
