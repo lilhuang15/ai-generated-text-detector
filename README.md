@@ -4,13 +4,13 @@ End-to-end NLP project: five approaches to detecting AI-generated text — train
 the same held-out data, error-audited, and shipped as a live demo. The headline isn't the F1;
 it's *why* the detector works, when it doesn't, and the evidence for both.
 
-**🔗 Live demo:** [lilhuang15-ai-text-detector.hf.space](https://lilhuang15-ai-text-detector.hf.space)
+**🔗 Live demo:** [ai-text-detector-lh.streamlit.app](https://ai-text-detector-lh.streamlit.app)
 · **🤗 Model:** [bert-ai-text-detector-reddit](https://huggingface.co/lilhuang15/bert-ai-text-detector-reddit)
 · **🤗 LoRA adapter:** [bert-ai-text-detector-reddit-lora](https://huggingface.co/lilhuang15/bert-ai-text-detector-reddit-lora)
 
-## TL;DR
+## Results at a Glance
 
-**Full held-out test** (n=10,200, natural 75/25 human/AI split)¹:
+**Full held-out test** (n=10,200, natural 75/25 human/AI split):
 
 | Model | Trainable params | Macro-F1 |
 |---|---|---|
@@ -19,8 +19,12 @@ it's *why* the detector works, when it doesn't, and the evidence for both.
 | **BERT full fine-tune** *(deployed)* | 110M | **0.9935** |
 | BERT + LoRA | **296K (0.27%)** | 0.9877 |
 
+<sub>Source: [`results/full_test_headlines.csv`](results/full_test_headlines.csv) — recomputed
+deterministically from the saved weights (Notebook 4 §4b); per-epoch training logs in
+[`results/`](results/).</sub>
+
 **Controlled 5-model comparison** (balanced 200-sample subset — the affordable way to put a
-paid LLM on identical footing)²:
+paid LLM on identical footing):
 
 | Model | Macro-F1 | AI-recall | AI-precision | Latency | Cost / 1K |
 |---|---|---|---|---|---|
@@ -29,6 +33,8 @@ paid LLM on identical footing)²:
 | BERT full fine-tune | 0.970 | 0.98 | 0.96 | ~19 ms | $0 |
 | BERT + LoRA | 0.995 | 0.99 | 1.00 | ~18 ms | $0 |
 | Claude Haiku 4.5 zero-shot | 0.914 | **1.00** | **0.85** | ~760 ms | $0.25 |
+
+<sub>Source: [`results/model_comparison.csv`](results/model_comparison.csv).</sub>
 
 > On n=200, one flipped sample ≈ 0.5 pp — subset rankings among the local models are noise
 > (the full-test table above is the reliable ranking). The subset's job is the **Claude
@@ -47,6 +53,35 @@ paid LLM on identical footing)²:
    abnormally short (≤2nd percentile of AI training length), and the falsely-flagged humans
    write long and structured (median 166 words, double the human median; 96% above it —
    see Error Analysis).
+
+## Data & Architecture
+
+The whole pipeline in one picture — where the data goes, what gets trained, and on which
+surfaces everything is judged:
+
+```mermaid
+flowchart LR
+    HC3["HC3 corpus<br/>human vs ChatGPT answers, 2023"] --> R["reddit_eli5<br/>67,996 texts · 75/25 human-AI"]
+    HC3 --> H["finance 8,436 · medicine 2,582<br/>held out — never trained on"]
+
+    R -- "train 47.6K<br/>(stratified 70/15/15)" --> M["four trained detectors<br/>TF-IDF · LSTM · <b>BERT (deployed)</b> · BERT+LoRA"]
+    Z["Claude Haiku 4.5<br/>zero-shot — prompted, no training"]
+
+    subgraph EVAL["Evaluation — Notebook 4"]
+        direction TB
+        E1["full test n=10,200<br/>headline macro-F1"]
+        E2["balanced 200<br/>5 models · cost · latency"]
+        E3["cross-domain transfer<br/>reddit → finance / medicine"]
+        E4["error audit<br/>all 49 errors read"]
+    end
+
+    R -- "held-out test 10,200" --> EVAL
+    M --> EVAL
+    Z --> E2
+    H --> E3
+
+    EVAL --> S["ship<br/>weights + model cards on HF Hub<br/>live demo on Streamlit Cloud"]
+```
 
 ## Problem
 
@@ -78,13 +113,15 @@ output, responses cached). All trained models use balanced class weights — the
 correction applied uniformly. Checkpoint selection: early stopping on validation F1 of the
 minority (AI) class, best checkpoint restored.
 
-## Cross-Domain Analysis³
+## Cross-Domain Analysis
 
 | Test set | Domain | Macro-F1 | Δ vs in-domain |
 |---|---|---|---|
-| reddit_eli5 (test) | in-domain | 0.9935 | — |
+| reddit_eli5 (test) | in-domain | 0.9935 | baseline |
 | finance | cross-domain | 0.9812 | −1.2 pp |
 | medicine | cross-domain | 0.9821 | −1.1 pp |
+
+<sub>Source: [`results/cross_domain_results.csv`](results/cross_domain_results.csv).</sub>
 
 I expected the standard detector story — a 10–25 pp collapse out of domain. It didn't happen,
 and the error analysis explains why: the model keys on the **generator's house style**
@@ -93,7 +130,7 @@ finance, and medicine. That flips the practical risk: for anyone deploying detec
 specialized text, the danger isn't *topic* shift — it's **generator drift** (newer models
 write differently) and **style-based evasion**.
 
-## Error Analysis⁴
+## Error Analysis
 
 The 200-sample comparison yields 20 texts where any model erred (17 BERT-vs-Claude
 disagreements + 3 both-wrong) — **all 20 manually read and categorized** against
@@ -109,6 +146,9 @@ model makes on the full 10,200-sample test**:
   the AI median of 174; 96% above the human median).
 - **Implications:** trivial evasion — ask the AI to answer briefly; asymmetric harm — the most
   articulate humans are the most likely to be falsely accused. Both are disclosed in the demo.
+
+<sub>Source: [`results/bert_vs_claude_disagreements.csv`](results/bert_vs_claude_disagreements.csv)
+and [`results/bert_full_test_errors.csv`](results/bert_full_test_errors.csv).</sub>
 
 ![Training length distributions for human and AI answers, with the 3 missed AI texts marked in the far-left tail of the AI distribution and the falsely-flagged-human median line sitting at the AI median](results/figs/length_prior.png)
 
@@ -134,8 +174,13 @@ notebooks/04_llm_comparison_crossdomain_errors.ipynb   Claude zero-shot, 5-model
                                             cross-domain eval, error analysis
 src/claude_detector.py                      canonical Claude prompt/parsing (notebook + demo)
 app.py                                      Streamlit demo (BERT vs Claude, side by side)
+spaces_* + spaces_deploy.py                 optional HF Space mirror (Docker; HF PRO required)
 results/                                    every number in this README lives here
 ```
+
+The live demo runs on **Streamlit Community Cloud** (free tier) and loads the BERT weights
+from the HF Hub repo above. As of 2026-07, HF Spaces hosting for Gradio/Docker apps is
+PRO-only, so the HF Space files are kept as an optional mirror.
 
 **Python 3.11 required** (pinned `numpy<2.0`/TF stack has no 3.12+ wheels):
 
@@ -156,10 +201,6 @@ reproducibility note in Limitations before retraining them casually.
 PyTorch · HuggingFace Transformers + PEFT · scikit-learn · Streamlit · Anthropic API
 
 ---
-
-¹ `results/full_test_headlines.csv` (BERT/LoRA also in `results/per_epoch_metrics_bert*.json`)
-· ² `results/model_comparison.csv` · ³ `results/cross_domain_results.csv`
-· ⁴ `results/bert_vs_claude_disagreements.csv`, `results/bert_full_test_errors.csv`
 
 **Data citation:** Guo et al., 2023 — *How Close is ChatGPT to Human Experts?* (HC3),
 [arXiv:2301.07597](https://arxiv.org/abs/2301.07597). License CC-BY-SA-4.0.
