@@ -25,11 +25,34 @@ except ImportError:
 from src.claude_detector import DEFAULT_MODEL as CLAUDE_MODEL, classify_text, cost_usd
 
 # --- Page config -----------------------------------------------------------
-st.set_page_config(page_title="AI Text Detector — BERT vs Claude", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="AI Text Detector — BERT vs Claude", page_icon="🤖", layout="centered")
 
 BERT_REPO = "lilhuang15/bert-ai-text-detector-reddit"
 BERT_SOURCE = "models/bert" if Path("models/bert/model.safetensors").exists() else BERT_REPO
 MAX_LEN = 256                                    # locked from EDA (Notebook 1)
+
+# Design spec: doc/specs/2026-07-16-demo-ui-blueprint-design.md
+# Verdict color = identity (AI violet / Human teal); banner color = agreement (green/red).
+CUSTOM_CSS = """<style>
+.verdict-ai, .verdict-human {
+  display: inline-block; padding: 6px 14px; border-radius: 6px;
+  font-size: 1.35rem; font-weight: 800; line-height: 1.3; margin: 2px 0 10px;
+}
+.verdict-ai    { background: #F1EBFC; color: #6D28D9; border-left: 3px solid #6D28D9; }
+.verdict-human { background: #E5F5F2; color: #0F766E; border-left: 3px solid #0F766E; }
+.banner-agree, .banner-disagree {
+  border-radius: 6px; padding: 10px 14px; margin: 4px 0 14px; font-size: 0.95rem;
+}
+.banner-agree    { background: #EAF6EE; color: #1E7E34; border-left: 3px solid #1E7E34; font-weight: 600; }
+.banner-disagree { background: #FDEEEE; color: #B42318; border-left: 3px solid #B42318; }
+.stat-strip {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.72rem; letter-spacing: .08em; color: #2563EB; margin: -8px 0 12px;
+}
+.conf-note { color: #94A3B8; font-style: italic; font-size: 0.85rem; margin-bottom: 8px; }
+/* the two result panels: white cards floating on the blueprint background */
+div[data-testid="stVerticalBlockBorderWrapper"] { background: #FFFFFF; }
+</style>"""
 
 
 # --- Model loading (cached across reruns) ----------------------------------
@@ -99,10 +122,12 @@ def agreement_banner(bert_label: str, claude_label: str | None) -> str | None:
 
 
 # --- UI ----------------------------------------------------------------------
-st.title("🤖 AI-Generated Text Detector")
+st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
+st.title("AI-Generated Text Detector")
+st.markdown("Fine-tuned **BERT** vs **Claude Haiku 4.5** zero-shot — same text, side by side.")
 st.markdown(
-    "Compare two approaches on the same text: a **fine-tuned BERT** (110M params, trained on "
-    "HC3 reddit_eli5) vs **Claude Haiku 4.5 zero-shot**."
+    '<div class="stat-strip">MACRO-F1 0.9935 · CROSS-DOMAIN −1.2 PP · HC3 REDDIT_ELI5</div>',
+    unsafe_allow_html=True,
 )
 
 # --- Example texts (from the HC3 test set, so predictions match the reported eval) ---
@@ -154,7 +179,8 @@ text = st.text_area(
     placeholder="Paste an essay, article, or chatbot response (a few sentences or more works best)...",
 )
 
-if st.button("🔍 Detect", type="primary", use_container_width=True):
+_, _mid, _ = st.columns([1, 2, 1])
+if _mid.button("Detect", type="primary", use_container_width=True):
     if not text.strip():
         st.warning("Please paste some text first.")
     else:
