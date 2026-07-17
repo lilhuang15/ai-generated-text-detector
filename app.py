@@ -136,11 +136,7 @@ st.markdown(
 # --- Example texts (from the HC3 test set, so predictions match the reported eval) ---
 EXAMPLES = {
     "🧑 Human answer": (
-        "Squatting puts the heavy lifting duties on the massive powerful muscles and thick "
-        "bones of the legs . Bending puts the lifting duties on the smaller stabilizing "
-        "muscles and fragile vertebra and cartilage in the spine . The spine can carry a "
-        "massive load as long as it 's compressed , it 's easily injured when trying to "
-        "support much weight while bent ."
+        "Because unlike pizza , hamburgers are pretty easy to make at home ."
     ),
     "🤖 AI answer (ChatGPT)": (
         "BBC Three is not coming off the air. BBC Three is a television channel operated by "
@@ -166,7 +162,8 @@ def _fill_example(name: str) -> None:
     st.session_state.input_text = EXAMPLES[name]
 
 EXAMPLE_HELP = {
-    "🧑 Human answer": "A casual Reddit explanation — both models should say Human.",
+    "🧑 Human answer": "A casual Reddit one-liner (on why burger delivery is rarer than pizza) — "
+    "both models should say Human.",
     "🤖 AI answer (ChatGPT)": "A typical GPT-3.5 answer — both models should say AI.",
     "🕳️ Short AI — BERT's blind spot": "A 42-word AI answer at the ≤2nd percentile of AI training "
     "length. Per the error analysis, BERT misses it (length prior) while Claude catches it.",
