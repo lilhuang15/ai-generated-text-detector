@@ -1,6 +1,9 @@
 # Personal drafts and notes (kept out of the public repo)
 doc/
 
+# Brainstorming mockups (visual companion working files)
+.superpowers/
+
 # Trained models and large artifacts (hosted on Hugging Face Hub)
 models/
 *.pth

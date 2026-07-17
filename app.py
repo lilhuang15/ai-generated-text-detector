@@ -31,7 +31,6 @@ BERT_REPO = "lilhuang15/bert-ai-text-detector-reddit"
 BERT_SOURCE = "models/bert" if Path("models/bert/model.safetensors").exists() else BERT_REPO
 MAX_LEN = 256                                    # locked from EDA (Notebook 1)
 
-# Design spec: doc/specs/2026-07-16-demo-ui-blueprint-design.md
 # Verdict color = identity (AI violet / Human teal); banner color = agreement (green/red).
 CUSTOM_CSS = """<style>
 .verdict-ai, .verdict-human {

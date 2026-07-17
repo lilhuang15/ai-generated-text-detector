@@ -1,4 +1,4 @@
-# Demo theme — "Blueprint" (design: doc/specs/2026-07-16-demo-ui-blueprint-design.md)
+# Demo theme — "Blueprint": paper-blue page, white widget panels, engineering-blue accent.
 [theme]
 base = "light"
 primaryColor = "#2563EB"              # Detect button, progress bar
