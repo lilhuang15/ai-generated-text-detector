@@ -190,9 +190,14 @@ if _mid.button("Detect", type="primary", use_container_width=True):
         tokenizer, model = load_bert()
         client = load_claude()
 
+        claude_result, claude_error = None, None
         with st.spinner("Running both models..."):
             bert_result = predict_bert(text, tokenizer, model)
-            claude_result = predict_claude(text, client) if client else None
+            if client:
+                try:
+                    claude_result = predict_claude(text, client)
+                except Exception as exc:   # usage limits, network, outages — never crash the page
+                    claude_error = exc
 
         banner = agreement_banner(bert_result["label"],
                                   claude_result["label"] if claude_result else None)
@@ -213,7 +218,12 @@ if _mid.button("Detect", type="primary", use_container_width=True):
                 st.markdown("**Claude Haiku 4.5**")
                 st.caption("zero-shot · Anthropic API")
                 if claude_result is None:
-                    st.info("Claude comparison is disabled — no `ANTHROPIC_API_KEY` configured.")
+                    if claude_error is not None:
+                        st.warning("Claude comparison is temporarily unavailable — the API "
+                                   "returned an error. The BERT verdict on the left is unaffected.")
+                        st.caption(f"`{type(claude_error).__name__}`")
+                    else:
+                        st.info("Claude comparison is disabled — no `ANTHROPIC_API_KEY` configured.")
                 else:
                     if claude_result["label"] in ("AI", "Human"):
                         st.markdown(verdict_badge(claude_result["label"]), unsafe_allow_html=True)
