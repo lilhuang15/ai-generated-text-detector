@@ -191,23 +191,35 @@ if _mid.button("Detect", type="primary", use_container_width=True):
             bert_result = predict_bert(text, tokenizer, model)
             claude_result = predict_claude(text, client) if client else None
 
+        banner = agreement_banner(bert_result["label"],
+                                  claude_result["label"] if claude_result else None)
+        if banner:
+            st.markdown(banner, unsafe_allow_html=True)
+
         col1, col2 = st.columns(2)
         with col1:
-            st.subheader("📊 Fine-tuned BERT")
-            st.metric("Prediction", bert_result["label"])
-            st.progress(bert_result["confidence"],
-                        text=f"Confidence: {bert_result['confidence']:.0%}")
-            st.metric("Latency", f"{bert_result['latency_ms']:.0f} ms")
-            st.metric("Cost", "$0 (runs locally)")
+            with st.container(border=True):
+                st.markdown("**Fine-tuned BERT**")
+                st.caption("110M params · runs locally")
+                st.markdown(verdict_badge(bert_result["label"]), unsafe_allow_html=True)
+                st.progress(bert_result["confidence"],
+                            text=f"Confidence: {bert_result['confidence']:.0%}")
+                st.caption(f"⏱ `{fmt_latency(bert_result['latency_ms'])}` · `$0 (local)`")
         with col2:
-            st.subheader("🤖 Claude Haiku 4.5 (zero-shot)")
-            if claude_result is None:
-                st.info("Claude comparison is disabled — no `ANTHROPIC_API_KEY` configured.")
-            else:
-                st.metric("Prediction", claude_result["label"])
-                st.write("Confidence: n/a (zero-shot — no calibrated probability)")
-                st.metric("Latency", f"{claude_result['latency_ms']:.0f} ms")
-                st.metric("Cost", f"${claude_result['cost']:.4f}")
+            with st.container(border=True):
+                st.markdown("**Claude Haiku 4.5**")
+                st.caption("zero-shot · Anthropic API")
+                if claude_result is None:
+                    st.info("Claude comparison is disabled — no `ANTHROPIC_API_KEY` configured.")
+                else:
+                    if claude_result["label"] in ("AI", "Human"):
+                        st.markdown(verdict_badge(claude_result["label"]), unsafe_allow_html=True)
+                        st.markdown('<div class="conf-note">confidence n/a — zero-shot</div>',
+                                    unsafe_allow_html=True)
+                    else:
+                        st.write(claude_result["label"])   # Unparsed(raw) — rare, no badge
+                    st.caption(f"⏱ `{fmt_latency(claude_result['latency_ms'])}` "
+                               f"· `${claude_result['cost']:.4f} per call`")
 
 st.divider()
 with st.expander("About this project"):
