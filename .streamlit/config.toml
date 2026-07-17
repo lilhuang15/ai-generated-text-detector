@@ -1,0 +1,12 @@
+# Demo theme — "Blueprint" (design: doc/specs/2026-07-16-demo-ui-blueprint-design.md)
+[theme]
+base = "light"
+primaryColor = "#2563EB"              # Detect button, progress bar
+backgroundColor = "#E9EFF7"           # blueprint paper
+secondaryBackgroundColor = "#FFFFFF"  # widgets float as white panels
+textColor = "#1E293B"
+borderColor = "#D4DEEC"
+showWidgetBorder = true
+baseRadius = "6px"
+codeBackgroundColor = "#EDF2FA"       # inline-code chips (latency/cost captions)
+codeTextColor = "#475569"
