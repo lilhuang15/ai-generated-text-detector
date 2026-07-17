@@ -74,6 +74,30 @@ def predict_claude(text, client):
     }
 
 
+# --- Result presentation (pure helpers; colors/copy from the 2026-07-16 UI spec) ---
+def fmt_latency(ms: float) -> str:
+    return f"{ms / 1000:.1f} s" if ms >= 1000 else f"{ms:.0f} ms"
+
+
+def verdict_badge(label: str) -> str:
+    cls = "verdict-ai" if label == "AI" else "verdict-human"
+    return f'<span class="{cls}">{label}</span>'
+
+
+def agreement_banner(bert_label: str, claude_label: str | None) -> str | None:
+    """Banner color encodes agreement, not the verdict. None → nothing to compare
+    (Claude disabled or unparsed), so no banner is rendered at all."""
+    if claude_label not in ("AI", "Human"):
+        return None
+    if bert_label == claude_label:
+        verdict = "AI-generated" if bert_label == "AI" else "Human-written"
+        return f'<div class="banner-agree">✓ Both models agree: {verdict}</div>'
+    note = (" Short AI text is BERT's known blind spot (length prior — see the error analysis)."
+            if (bert_label, claude_label) == ("Human", "AI") else "")
+    return ('<div class="banner-disagree"><b>✕ Models disagree</b> — '
+            f'BERT says <b>{bert_label}</b>, Claude says <b>{claude_label}</b>.{note}</div>')
+
+
 # --- UI ----------------------------------------------------------------------
 st.title("🤖 AI-Generated Text Detector")
 st.markdown(
