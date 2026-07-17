@@ -48,7 +48,11 @@ CUSTOM_CSS = """<style>
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 0.72rem; letter-spacing: .08em; color: #2563EB; margin: -8px 0 12px;
 }
-.conf-note { color: #94A3B8; font-style: italic; font-size: 0.85rem; margin-bottom: 8px; }
+.conf-note { color: #64748B; font-style: italic; font-size: 0.85rem; margin-bottom: 8px; }
+/* captions (latency/cost, example hint, panel identity lines): default gray is too faint */
+div[data-testid="stCaptionContainer"], div[data-testid="stCaptionContainer"] p {
+  color: #475569 !important; opacity: 1 !important;
+}
 /* the two result panels: white cards floating on the blueprint background */
 div[data-testid="stVerticalBlockBorderWrapper"] { background: #FFFFFF; }
 </style>"""
@@ -169,7 +173,7 @@ EXAMPLE_HELP = {
 }
 
 st.caption("No text handy? Try a real sample from the held-out test set:")
-for col, name in zip(st.columns(len(EXAMPLES)), EXAMPLES):
+for col, name in zip(st.columns([0.8, 1, 1.2]), EXAMPLES):  # widest label gets the widest column
     col.button(name, on_click=_fill_example, args=(name,),
                help=EXAMPLE_HELP[name], use_container_width=True)
 

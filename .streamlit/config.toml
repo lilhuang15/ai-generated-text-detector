@@ -9,4 +9,4 @@ borderColor = "#D4DEEC"
 showWidgetBorder = true
 baseRadius = "6px"
 codeBackgroundColor = "#EDF2FA"       # inline-code chips (latency/cost captions)
-codeTextColor = "#475569"
+codeTextColor = "#334155"
