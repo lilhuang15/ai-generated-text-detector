@@ -182,13 +182,19 @@ The live demo runs on **Streamlit Community Cloud** (free tier) and loads the BE
 from the HF Hub repo above. As of 2026-07, HF Spaces hosting for Gradio/Docker apps is
 PRO-only, so the HF Space files are kept as an optional mirror.
 
-**Python 3.11 required** (pinned `numpy<2.0`/TF stack has no 3.12+ wheels):
+**Just run the demo** (any recent Python; same pinned versions the live app uses):
+
+```bash
+pip install -r requirements.txt
+streamlit run app.py                                     # local demo (BERT-only without ANTHROPIC_API_KEY)
+```
+
+**Reproduce the research** — Python 3.11 required (pinned `numpy<2.0`/TF stack has no 3.12+ wheels):
 
 ```bash
 conda create -n aidetect python=3.11 -y && conda activate aidetect
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 jupyter notebook notebooks/01_eda_and_data_prep.ipynb   # then 02, 03, 04 in order
-streamlit run app.py                                     # local demo (BERT-only without ANTHROPIC_API_KEY)
 ```
 
 Claude calls need `ANTHROPIC_API_KEY` (copy `.env.example` → `.env`); Notebook 4 caches all

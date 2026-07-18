@@ -1,0 +1,37 @@
+# Full research environment — notebooks 01-04 + local demo, pinned to the exact
+# versions the results were produced with (conda env "aidetect", Python 3.11):
+#
+#   conda create -n aidetect python=3.11 -y && conda activate aidetect
+#   pip install -r requirements-dev.txt
+#
+# The deployed demo installs only requirements.txt (slim, same core versions).
+
+# Core data / ML
+pandas==2.3.3
+numpy==1.26.4
+scikit-learn==1.8.0
+
+# Deep learning frameworks
+torch==2.12.0
+tensorflow==2.21.0
+transformers==4.57.6
+datasets==2.21.0
+huggingface_hub==0.36.2
+peft==0.19.1                # LoRA fine-tuning (§9.7)
+
+# Notebook + viz
+jupyter==1.1.1
+matplotlib==3.10.9
+seaborn==0.13.2
+tqdm==4.67.3
+
+# LLM
+anthropic==0.105.2
+python-dotenv==1.2.2        # load ANTHROPIC_API_KEY from a local, gitignored .env (NB4)
+
+# Deployment
+streamlit==1.58.0
+
+# Misc
+joblib==1.5.3
+pyarrow==24.0.0             # parquet I/O

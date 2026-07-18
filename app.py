@@ -6,9 +6,9 @@ The Claude side reuses the canonical prompt/parsing in `src/claude_detector.py` 
 classifier evaluated in Notebook 4, so the demo behaves exactly like the reported model.
 """
 import os
-os.environ.setdefault("USE_TF", "0")   # transformers: PyTorch only — hosts that install the full
-                                       # root requirements.txt (Streamlit Cloud) have TF present,
-                                       # and importing it wastes ~1GB RAM / can crash the free tier
+os.environ.setdefault("USE_TF", "0")   # transformers: PyTorch only — the research env
+                                       # (requirements-dev.txt) has TF installed, and importing
+                                       # it wastes ~1GB RAM / can crash a small host
 import time
 from pathlib import Path
 
