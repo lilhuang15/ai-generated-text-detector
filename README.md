@@ -29,8 +29,8 @@ paid LLM on identical footing):
 | Model | Macro-F1 | AI-recall | AI-precision | Latency | Cost / 1K |
 |---|---|---|---|---|---|
 | TF-IDF + LogReg | 0.975 | 0.97 | 0.98 | <1 ms | $0 |
-| PyTorch LSTM | 0.980 | 0.97 | 0.99 | ~2 ms | $0 |
-| BERT full fine-tune | 0.970 | 0.98 | 0.96 | ~19 ms | $0 |
+| PyTorch LSTM | 0.980 | 0.97 | 0.99 | ~3 ms | $0 |
+| BERT full fine-tune | 0.970 | 0.98 | 0.96 | ~21 ms | $0 |
 | BERT + LoRA | 0.995 | 0.99 | 1.00 | ~18 ms | $0 |
 | Claude Haiku 4.5 zero-shot | 0.914 | **1.00** | **0.85** | ~760 ms | $0.25 |
 
@@ -41,10 +41,10 @@ paid LLM on identical footing):
 > comparison**: the zero-shot LLM catches every AI text (recall 1.00) but false-flags humans
 > (precision 0.85), and loses to a $0-marginal fine-tune by ~8 pp.
 
-![Latency vs macro-F1: the four local models cluster at 0.97–0.995 F1 under 20 ms; zero-shot Claude sits at 0.914 F1 and 761 ms](results/figs/latency_f1_frontier.png)
+![Latency vs macro-F1: the four local models cluster at 0.97–0.995 F1 within ~21 ms; zero-shot Claude sits at 0.914 F1 and 761 ms](results/figs/latency_f1_frontier.png)
 
 **Three findings:**
-1. **Fine-tuning still wins in-domain (2026):** a 110M BERT at ~20 ms/$0 beats zero-shot
+1. **Fine-tuning still wins in-domain (2026):** a 110M BERT at ~21 ms/$0 beats zero-shot
    Claude Haiku by ~8 pp.
 2. **The detector transfers across domains — because it isn't detecting "AI-ness":** the
    expected cross-domain collapse didn't happen (−1.2 pp); the model tracks the *generator's
