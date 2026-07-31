@@ -39,13 +39,15 @@ paid LLM on identical footing):
 > On n=200, one flipped sample ≈ 0.5 pp — subset rankings among the local models are noise
 > (the full-test table above is the reliable ranking). The subset's job is the **Claude
 > comparison**: the zero-shot LLM catches every AI text (recall 1.00) but false-flags humans
-> (precision 0.85), and loses to a $0-marginal fine-tune by ~8 pp.
+> (precision 0.85), and loses to every $0-marginal local model — by 5.6 pp against the deployed
+> BERT on this same subset, and by 8.1 pp against the best local model on it (LoRA).
 
 ![Latency vs macro-F1: the four local models cluster at 0.97–0.995 F1 within ~21 ms; zero-shot Claude sits at 0.914 F1 and 761 ms](results/figs/latency_f1_frontier.png)
 
 **Three findings:**
-1. **Fine-tuning still wins in-domain (2026):** a 110M BERT at ~21 ms/$0 beats zero-shot
-   Claude Haiku by ~8 pp.
+1. **Fine-tuning still wins in-domain (2026):** on the same balanced 200 subset, a 110M BERT at
+   ~21 ms/$0 beats zero-shot Claude Haiku by 5.6 pp (0.970 vs 0.914) — and all four local models
+   beat it, by 5.6–8.1 pp.
 2. **The detector transfers across domains — because it isn't detecting "AI-ness":** the
    expected cross-domain collapse didn't happen (−1.2 pp); the model tracks the *generator's
    style*, which is constant across topics.
