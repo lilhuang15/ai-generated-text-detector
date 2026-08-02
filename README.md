@@ -52,7 +52,7 @@ paid LLM on identical footing):
    expected cross-domain collapse didn't happen (−1.2 pp); the model tracks the *generator's
    style*, which is constant across topics.
 3. **A single mechanism — a length prior — explains its errors:** every missed AI text is
-   abnormally short (≤2nd percentile of AI training length), and the falsely-flagged humans
+   shorter than 98% of the AI text it trained on, and the falsely-flagged humans
    write long and structured (median 166 words, double the human median; 96% above it —
    see Error Analysis).
 
@@ -142,8 +142,8 @@ model makes on the full 10,200-sample test**:
 - **Claude's 17 errors are all false positives on humans** (recall 1.000 / precision 0.855):
   it treats *polish* as AI — 9 structured human explanations, 6 short texts — and ignores
   local human markers (typos, hedges) in favor of global form.
-- **BERT's errors are a pure length prior:** all **3** missed AI texts sit at the
-  **≤2nd percentile** of AI training length (42/74/78 words vs median 174); the **46**
+- **BERT's errors are a pure length prior:** all **3** missed AI texts are
+  **shorter than 98% of the AI text it trained on** (42/74/78 words vs median 174); the **46**
   falsely-flagged humans write long (median 166 words vs the human median of 82 — right at
   the AI median of 174; 96% above the human median).
 - **Implications:** trivial evasion — ask the AI to answer briefly; asymmetric harm — the most
