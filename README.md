@@ -8,6 +8,15 @@ it's *why* the detector works, when it doesn't, and the evidence for both.
 · **🤗 Model:** [bert-ai-text-detector-reddit](https://huggingface.co/lilhuang15/bert-ai-text-detector-reddit)
 · **🤗 LoRA adapter:** [bert-ai-text-detector-reddit-lora](https://huggingface.co/lilhuang15/bert-ai-text-detector-reddit-lora)
 
+![The live demo: paste any text, hit Detect, and the fine-tuned BERT (110M params, running
+locally) and Claude Haiku 4.5 (zero-shot, via API) return verdicts side by side — each card
+showing the label, confidence, per-call latency and cost, under a banner saying whether the
+two models agree](results/figs/demo.png)
+
+<sub>Paste any text and both detectors answer side by side. The per-call timings shown in the
+app are single-text inference on a free-tier cloud CPU — not the same measurement as the
+batched local benchmark below.</sub>
+
 ## Results at a Glance
 
 **Full held-out test** (n=10,200, natural 75/25 human/AI split):
@@ -34,7 +43,10 @@ paid LLM on identical footing):
 | BERT + LoRA | 0.995 | 0.99 | 1.00 | ~18 ms | $0 |
 | Claude Haiku 4.5 zero-shot | 0.914 | **1.00** | **0.85** | ~760 ms | $0.25 |
 
-<sub>Source: [`results/model_comparison.csv`](results/model_comparison.csv).</sub>
+<sub>Source: [`results/model_comparison.csv`](results/model_comparison.csv). Latency is the mean
+per-sample cost inside one batched call over the 200 texts, measured locally on Apple Silicon
+(MPS) — deliberately not the same quantity as the per-click latency the hosted demo reports,
+which is a single text on a free-tier cloud CPU.</sub>
 
 > On n=200, one flipped sample ≈ 0.5 pp — subset rankings among the local models are noise
 > (the full-test table above is the reliable ranking). The subset's job is the **Claude
@@ -96,12 +108,21 @@ experiment, and a 100%-coverage error audit of the deployed model.
 
 ## Data
 
-- **Source:** [Hello-SimpleAI/HC3](https://huggingface.co/datasets/Hello-SimpleAI/HC3)
-  (CC-BY-SA-4.0) — human vs ChatGPT (GPT-3.5) answers, English subsets only.
-- **Training + in-domain test:** `reddit_eli5`, unrolled from paired Q&A into 67,996
-  `(text, label)` samples; 75.5% human / 24.5% AI → class-weighted losses + **macro-F1**
-  as the headline metric everywhere.
-- **Held-out cross-domain sets (never trained on):** `finance` (8,436) and `medicine` (2,582).
+**Source:** [Hello-SimpleAI/HC3](https://huggingface.co/datasets/Hello-SimpleAI/HC3)
+(CC-BY-SA-4.0) — human vs ChatGPT (GPT-3.5) answers, English subsets only. HC3 is
+**paired Q&A**: one raw row is a question holding an array of human answers and an array of
+ChatGPT answers, so it is unrolled into one row per answer before modeling.
+
+| Subset | Raw questions | Unrolled texts | Human / AI | Role |
+|---|---|---|---|---|
+| `reddit_eli5` | 17,112 | 67,996 | 75.5% / 24.5% | train + in-domain test |
+| `finance` | 3,933 | 8,436 | 46.6% / 53.4% | held out — cross-domain only |
+| `medicine` | 1,248 | 2,582 | 48.3% / 51.7% | held out — cross-domain only |
+
+The reddit imbalance is structural, not sampling: every ELI5 question carries three human
+answers but at most one ChatGPT answer. Hence class-weighted losses and **macro-F1** as the
+headline metric everywhere.
+
 - Stratified 70/15/15 split, seed 42; `max_length=256` WordPiece tokens chosen from EDA
   (95th-percentile length, capped).
 
